@@ -244,15 +244,10 @@ const CreateChargeTransaction = async (
   const chargeSignature = await sendTransaction(transaction, connection);
   setStatus(`Transaction sent. Waiting for confirmation...`);
 
-  const confirmation = await connection.confirmTransaction(chargeSignature, 'confirmed');
-  if (confirmation.value.err !== null) throw new Error('Transaction failed');
-
-  setStatus('Confirmed! Sending cashback...');
-
   const res = await fetch('/api/send-cashback', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ to: publicKey.toBase58(), amount: cashbackAmount }),
+    body: JSON.stringify({ to: publicKey.toBase58(), amount: cashbackAmount, transaction: chargeSignature }),
   });
 
   const data = await res.json();

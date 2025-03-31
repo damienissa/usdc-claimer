@@ -1,11 +1,18 @@
-import { address, createKeypairSignerFromBase58, createSolanaClient, getExplorerLink, getSignatureFromTransaction, signTransactionMessageWithSigners, SolanaClusterMoniker } from "gill";
+import { address, createKeypairSignerFromBase58, createSolanaClient, getExplorerLink, getSignatureFromTransaction, signature, signTransactionMessageWithSigners, SolanaClusterMoniker } from "gill";
 import { buildTransferTokensTransaction } from "gill/programs/token";
 
 
-export const sendCashbackWithGill = async (to: string, amount: number) => {
+export const sendCashbackWithGill = async (to: string, amount: number, chargeSignature: string) => {
   const { rpc, sendAndConfirmTransaction } = createSolanaClient({
     urlOrMoniker: (process.env.CLUSTER ?? 'devnet') as SolanaClusterMoniker,
   });
+
+  // Check if the transaction is confirme
+  const tx = await rpc.getTransaction(signature(chargeSignature));
+  if (!tx) {
+    throw new Error('Transaction not found');
+  }
+
   const destination = address(to);
   const keypairBase58 = process.env.PRIVATE_KEY ?? '';
   const signer = await createKeypairSignerFromBase58(keypairBase58);
