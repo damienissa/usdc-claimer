@@ -1,7 +1,7 @@
-import './globals.css'
 import { ClusterProvider } from '@/components/cluster/cluster-data-access'
 import { SolanaProvider } from '@/components/solana/solana-provider'
 import { UiLayout } from '@/components/ui/ui-layout'
+import './globals.css'
 import { ReactQueryProvider } from './react-query-provider'
 
 export const metadata = {
@@ -17,8 +17,11 @@ const links: { label: string; path: string }[] = [
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="disable-grammarly-extension" content="true" />
+      </head>
+      <body suppressHydrationWarning>
         <ReactQueryProvider>
           <ClusterProvider>
             <SolanaProvider>
