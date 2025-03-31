@@ -4,13 +4,13 @@ import { buildTransferTokensTransaction } from "gill/programs/token";
 
 export const sendCashbackWithGill = async (to: string, amount: number) => {
   const { rpc, sendAndConfirmTransaction } = createSolanaClient({
-    urlOrMoniker: "mainnet",
+    urlOrMoniker: "devnet",
   });
   const destination = address(to);
   const keypairBase58 =
     "";
   const signer = await createKeypairSignerFromBase58(keypairBase58);
-  const mint = address("4YhaKDunYpNJ7ASyUZSvEj5KJCb1jwofUQBaWSWCSkSU");
+  const mint = address("FDb8RsVK1Js4jLPvoCVyGQVWB6ckZ5VFZzeQe6nW4Z2k");
   const { value: latestBlockhash } = await rpc.getLatestBlockhash().send();
   const transaction = await buildTransferTokensTransaction({
     feePayer: signer,

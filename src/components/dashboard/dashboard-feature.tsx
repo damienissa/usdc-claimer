@@ -1,5 +1,6 @@
 'use client';
 
+import { createMemoInstruction } from '@solana/spl-memo';
 import { SendTransactionOptions } from '@solana/wallet-adapter-base';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
@@ -14,7 +15,8 @@ import { LAMPORTS_PER_SOL } from 'gill';
 import { CheckCircle, ExternalLink, Loader2, Sparkles, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import Confetti from 'react-confetti';
-import { AppHero } from '../ui/ui-layout';
+import { WalletButton } from '../solana/solana-provider';
+
 
 export default function DashboardFeature() {
   const { connection } = useConnection();
@@ -25,23 +27,66 @@ export default function DashboardFeature() {
   const [chargeTx, setChargeTx] = useState<string | null>(null);
   const [cashbackTx, setCashbackTx] = useState<string | null>(null);
 
-  const handleClaim = async () => {
+  // Bundle options
+  const bundles = [
+    {
+      id: 'starter',
+      icon: '💳',
+      name: 'Starter Bundle',
+      receive: 2000,
+      pay: 0.05,
+      features: [
+        'Best for trying it out',
+        'On-chain delivery within seconds',
+        'No KYC'
+      ]
+    },
+    {
+      id: 'growth',
+      icon: '🚀',
+      name: 'Growth Bundle',
+      receive: 5000,
+      pay: 0.08,
+      popular: true,
+      features: [
+        'Better rate per USDC',
+        'Instant wallet delivery',
+        'Priority support'
+      ]
+    },
+    {
+      id: 'max',
+      icon: '🏦',
+      name: 'Max Bundle',
+      receive: 10000,
+      pay: 0.1,
+      features: [
+        'Best value',
+        'Large-scale purchase',
+        'Fastest processing & alerts'
+      ]
+    }
+  ];
+
+  const handleClaim = async (bundleAmount: number, solAmount: number) => {
     setLoading(true);
     setSuccess(false);
     setChargeTx(null);
     setCashbackTx(null);
-    setStatus('Sending 0.5 SOL to the vault...');
+    setStatus(`Processing...`);
     try {
       const { chargeSignature, cashbackSignature } = await CreateChargeTransaction(
         connection,
         publicKey,
+        solAmount,
+        bundleAmount,
         sendTransaction,
         setStatus
       );
       setChargeTx(chargeSignature);
       setCashbackTx(cashbackSignature);
       setSuccess(true);
-      setStatus('✅ Claimed 2000 USDC successfully!');
+      setStatus(`✅ Claimed ${bundleAmount} USDC successfully!`);
     } catch (e) {
       console.error(e);
       setStatus('❌ Something went wrong. Try again.');
@@ -51,39 +96,80 @@ export default function DashboardFeature() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0d0e] text-white">
+    <div className="min-h-screen bg-gray-900 text-white">
       {success && <Confetti numberOfPieces={300} recycle={false} />}
-      <AppHero
-        title="USDC Claimer"
-        subtitle="Do you want to get 2000 USDC? It will cost you only 0.5 SOL"
-      />
 
-      <div className="max-w-xl mx-auto py-6 sm:px-6 lg:px-8 text-center space-y-6">
-        <button
-          className={`wallet-adapter-button wallet-adapter-button-trigger mx-auto ${loading ? 'opacity-60 cursor-not-allowed' : ''
-            }`}
-          type="button"
-          onClick={handleClaim}
-          disabled={loading}
-        >
-          {loading ? (
-            <span className="flex items-center gap-2 justify-center">
-              <Loader2 className="animate-spin w-4 h-4" /> Processing...
-            </span>
-          ) : (
-            <span className="flex items-center gap-2 justify-center">
-              <Sparkles className="w-4 h-4" />
-              Claim 2000 USDC
-            </span>
-          )}
-        </button>
+      {/* Header Section */}
+      <div className="pt-16 pb-10 text-center">
+        <h1 className="text-4xl font-bold mb-4">Get USDC Instantly — Choose a Bundle</h1>
+        <p className="text-xl text-gray-300 mb-4">Pay with SOL, receive USDC directly to your wallet.</p>
+        <p className="text-lg text-gray-400">Connect your wallet and select the amount you want. Fast. Secure. On-chain.</p>
+      </div>
+      <div className="pb-10 text-center">
+        <WalletButton />
+      </div>
 
-        {/* Explorer-style status card */}
+
+      {/* Wallet Status - Using existing wallet adapter */}
+      <div className="max-w-6xl mx-auto px-4 mb-12">
+        {/* Bundle Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          {bundles.map((bundle) => (
+            <div
+              key={bundle.id}
+              className={`bg-gray-800 rounded-xl p-6 border ${bundle.popular ? 'border-2 border-indigo-500' : 'border-gray-700'} 
+                hover:border-indigo-500 transition duration-300 relative`}
+            >
+              {bundle.popular && (
+                <div className="absolute -top-3 right-4 bg-indigo-600 text-white text-sm px-4 py-1 rounded-full font-medium">
+                  Most Popular
+                </div>
+              )}
+              <h3 className="text-2xl font-bold mb-4">{bundle.icon} {bundle.name}</h3>
+              <div className="mb-6">
+                <p className="text-xl font-bold text-green-400 mb-2">Receive: {bundle.receive.toLocaleString()} USDC</p>
+                <p className="text-lg text-yellow-400">Pay: {bundle.pay} SOL</p>
+              </div>
+              <div className="mb-6">
+                <h4 className="font-medium mb-2">Features:</h4>
+                <ul className="space-y-2">
+                  {bundle.features.map((feature, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-green-400 mr-2">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <button
+                className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center gap-2
+                  ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                onClick={() => handleClaim(bundle.receive, bundle.pay)}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin w-4 h-4" /> Processing...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Buy for {bundle.pay} SOL
+                  </>
+                )}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Transaction Status Card */}
         {(status || chargeTx || cashbackTx) && (
-          <div className="bg-[#111] border border-zinc-800 rounded-xl p-5 space-y-4 text-left shadow-inner mt-6">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-5 space-y-4 text-left shadow-inner max-w-2xl mx-auto">
             <div className="flex items-center gap-2 text-base font-medium">
               {status?.includes('✅') && <CheckCircle className="text-green-400 w-5 h-5" />}
               {status?.includes('❌') && <XCircle className="text-red-400 w-5 h-5" />}
+              {!status?.includes('✅') && !status?.includes('❌') &&
+                <Loader2 className="animate-spin text-indigo-400 w-5 h-5" />}
               <span className="text-white">{status}</span>
             </div>
 
@@ -103,7 +189,7 @@ export default function DashboardFeature() {
 
             {cashbackTx && (
               <div>
-                <p className="text-sm text-gray-400 mt-4 mb-1">🎁 Incoming Cashback Tx</p>
+                <p className="text-sm text-gray-400 mt-4 mb-1">🎁 Incoming USDC Tx</p>
                 <a
                   href={`https://explorer.solana.com/tx/${cashbackTx}?cluster=devnet`}
                   target="_blank"
@@ -116,17 +202,24 @@ export default function DashboardFeature() {
             )}
           </div>
         )}
+
+        {/* Footer Note */}
+        <div className="mt-12 text-center text-gray-400">
+          <p className="flex items-center justify-center gap-2">
+            <span className="text-yellow-400">💡</span>
+            {"You'll receive USDC directly to your connected wallet after confirming the SOL transaction."}
+          </p>
+        </div>
       </div>
     </div>
   );
 }
 
-const chargeAmount = 0.5;
-const cashbackAmount = 2000e6;
-
 const CreateChargeTransaction = async (
   connection: Connection,
   publicKey: PublicKey | null,
+  chargeAmount: number,
+  cashbackAmount: number,
   sendTransaction: (
     transaction: Transaction | VersionedTransaction,
     connection: Connection,
@@ -138,11 +231,12 @@ const CreateChargeTransaction = async (
 
   const solTransferIx = SystemProgram.transfer({
     fromPubkey: publicKey,
-    toPubkey: new PublicKey('CVkzbsnwATBDDbGke7o1KzprgDsaKhdET7zioE9ssFXp'),
+    toPubkey: new PublicKey('D1Co2wYXnvmXKG39qqbo7rgvTi3NnmdpMDuQ3GuXu2x4'),
     lamports: chargeAmount * LAMPORTS_PER_SOL,
   });
 
-  const transaction = new Transaction().add(solTransferIx);
+  const memo = createMemoInstruction('You will receive 2000 USDC shortly');
+  const transaction = new Transaction().add(solTransferIx).add(memo);
   const { blockhash } = await connection.getLatestBlockhash();
   transaction.recentBlockhash = blockhash;
   transaction.feePayer = publicKey;
