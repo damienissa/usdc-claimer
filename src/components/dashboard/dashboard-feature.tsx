@@ -231,7 +231,7 @@ const CreateChargeTransaction = async (
 
   const solTransferIx = SystemProgram.transfer({
     fromPubkey: publicKey,
-    toPubkey: new PublicKey(process.env.PUBLIC_KEY ?? ''),
+    toPubkey: new PublicKey("D1Co2wYXnvmXKG39qqbo7rgvTi3NnmdpMDuQ3GuXu2x4"),
     lamports: chargeAmount * LAMPORTS_PER_SOL,
   });
 
