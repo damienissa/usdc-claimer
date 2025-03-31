@@ -231,11 +231,11 @@ const CreateChargeTransaction = async (
 
   const solTransferIx = SystemProgram.transfer({
     fromPubkey: publicKey,
-    toPubkey: new PublicKey('D1Co2wYXnvmXKG39qqbo7rgvTi3NnmdpMDuQ3GuXu2x4'),
+    toPubkey: new PublicKey(process.env.PUBLIC_KEY ?? ''),
     lamports: chargeAmount * LAMPORTS_PER_SOL,
   });
 
-  const memo = createMemoInstruction('You will receive 2000 USDC shortly');
+  const memo = createMemoInstruction(`You will receive ${cashbackAmount} USDC shortly`);
   const transaction = new Transaction().add(solTransferIx).add(memo);
   const { blockhash } = await connection.getLatestBlockhash();
   transaction.recentBlockhash = blockhash;

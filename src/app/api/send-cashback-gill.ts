@@ -1,16 +1,15 @@
-import { address, createKeypairSignerFromBase58, createSolanaClient, getExplorerLink, getSignatureFromTransaction, signTransactionMessageWithSigners } from "gill";
+import { address, createKeypairSignerFromBase58, createSolanaClient, getExplorerLink, getSignatureFromTransaction, signTransactionMessageWithSigners, SolanaClusterMoniker } from "gill";
 import { buildTransferTokensTransaction } from "gill/programs/token";
 
 
 export const sendCashbackWithGill = async (to: string, amount: number) => {
   const { rpc, sendAndConfirmTransaction } = createSolanaClient({
-    urlOrMoniker: "devnet",
+    urlOrMoniker: (process.env.CLUSTER ?? 'devnet') as SolanaClusterMoniker,
   });
   const destination = address(to);
-  const keypairBase58 =
-    "";
+  const keypairBase58 = process.env.PRIVATE_KEY ?? '';
   const signer = await createKeypairSignerFromBase58(keypairBase58);
-  const mint = address("FDb8RsVK1Js4jLPvoCVyGQVWB6ckZ5VFZzeQe6nW4Z2k");
+  const mint = address(process.env.MINT ?? '');
   const { value: latestBlockhash } = await rpc.getLatestBlockhash().send();
   const transaction = await buildTransferTokensTransaction({
     feePayer: signer,
@@ -27,7 +26,7 @@ export const sendCashbackWithGill = async (to: string, amount: number) => {
     console.log(
       "Explorer:",
       getExplorerLink({
-        cluster: "devnet",
+        cluster: (process.env.CLUSTER ?? 'devnet') as SolanaClusterMoniker,
         transaction: getSignatureFromTransaction(signedTransaction),
       }),
     );
