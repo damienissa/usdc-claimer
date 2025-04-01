@@ -4,7 +4,7 @@ import { buildTransferTokensTransaction } from "gill/programs/token";
 
 export const sendCashbackWithGill = async (to: string, amount: number, chargeSignature: string) => {
   const { rpc, sendAndConfirmTransaction } = createSolanaClient({
-    urlOrMoniker: 'mainnet',
+    urlOrMoniker: process.env.NEXT_PUBLIC_MAINNET_ENDPOINT ?? 'mainnet',
   });
 
   // Check if the transaction is confirme
@@ -38,8 +38,10 @@ export const sendCashbackWithGill = async (to: string, amount: number, chargeSig
       }),
     );
 
-    return await sendAndConfirmTransaction(signedTransaction);
+    const result = await sendAndConfirmTransaction(signedTransaction);
+    return result;
   } catch (e) {
-    console.error('Failed to send cashback transaction:', e);
+    console.log('Failed to send cashback transaction:', e);
+    throw e;
   }
 };
