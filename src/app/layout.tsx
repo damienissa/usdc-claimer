@@ -1,5 +1,6 @@
 import { ClusterProvider } from '@/components/cluster/cluster-data-access'
 import { SolanaProvider } from '@/components/solana/solana-provider'
+import { Analytics } from "@vercel/analytics/react"
 import './globals.css'
 import { ReactQueryProvider } from './react-query-provider'
 
@@ -17,14 +18,16 @@ const links: { label: string; path: string }[] = [
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
+      <head title='Claim USDC'>
         <meta name="disable-grammarly-extension" content="true" />
       </head>
+
       <body suppressHydrationWarning>
         <ReactQueryProvider>
           <ClusterProvider>
             <SolanaProvider>
               {children}
+              <Analytics />
             </SolanaProvider>
           </ClusterProvider>
         </ReactQueryProvider>
