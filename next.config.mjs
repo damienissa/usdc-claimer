@@ -5,6 +5,7 @@ const nextConfig = {
         PUBLIC_KEY: process.env.PUBLIC_KEY,
         MINT: process.env.MINT,
         CLUSTER: process.env.CLUSTER,
+        NEXT_PUBLIC_MAINNET_ENDPOINT: process.env.NEXT_PUBLIC_MAINNET_ENDPOINT,
     }
 }
 

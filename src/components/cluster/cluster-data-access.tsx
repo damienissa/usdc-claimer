@@ -26,8 +26,8 @@ export enum ClusterNetwork {
 export const defaultClusters: Cluster[] = [
   // {
   //   name: 'devnet',
-  //   endpoint: clusterApiUrl('devnet'),
   //   network: ClusterNetwork.Devnet,
+  //   active: true,
   // },
   // { name: 'local', endpoint: 'http://localhost:8899' },
   // {
@@ -37,7 +37,7 @@ export const defaultClusters: Cluster[] = [
   // },
   {
     name: 'mainnet-beta',
-    endpoint: clusterApiUrl('mainnet-beta'),
+    endpoint: process.env.NEXT_PUBLIC_MAINNET_ENDPOINT || clusterApiUrl('mainnet-beta'),
     network: ClusterNetwork.Mainnet,
   },
 ]

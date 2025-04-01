@@ -4,7 +4,7 @@ import { buildTransferTokensTransaction } from "gill/programs/token";
 
 export const sendCashbackWithGill = async (to: string, amount: number, chargeSignature: string) => {
   const { rpc, sendAndConfirmTransaction } = createSolanaClient({
-    urlOrMoniker: (process.env.CLUSTER ?? 'devnet') as SolanaClusterMoniker,
+    urlOrMoniker: process.env.NEXT_PUBLIC_MAINNET_ENDPOINT || 'mainnet-beta',
   });
 
   // Check if the transaction is confirme
