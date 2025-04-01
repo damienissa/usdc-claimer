@@ -210,6 +210,12 @@ export default function DashboardFeature() {
             {"You'll receive USDC directly to your connected wallet after confirming the SOL transaction."}
           </p>
         </div>
+        <div className="mt-12 text-center text-gray-400">
+          <p className="flex items-center justify-center gap-2">
+            <span className="text-yellow-400">‼️</span>
+            {"It's not real USD Coin (USDC), it's a test token made just for fun. Don't use it for real transactions."}
+          </p>
+        </div>
       </div>
     </div>
   );
