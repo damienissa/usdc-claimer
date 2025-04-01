@@ -34,7 +34,7 @@ export default function DashboardFeature() {
       icon: '💳',
       name: 'Starter Bundle',
       receive: 2000,
-      pay: 0.05,
+      pay: 0.5,
       features: [
         'Best for trying it out',
         'On-chain delivery within seconds',
@@ -46,7 +46,7 @@ export default function DashboardFeature() {
       icon: '🚀',
       name: 'Growth Bundle',
       receive: 5000,
-      pay: 0.08,
+      pay: 0.8,
       popular: true,
       features: [
         'Better rate per USDC',
@@ -59,7 +59,7 @@ export default function DashboardFeature() {
       icon: '🏦',
       name: 'Max Bundle',
       receive: 10000,
-      pay: 0.1,
+      pay: 1,
       features: [
         'Best value',
         'Large-scale purchase',
@@ -177,7 +177,7 @@ export default function DashboardFeature() {
               <div>
                 <p className="text-sm text-gray-400 mb-1">🔁 Outgoing SOL Tx</p>
                 <a
-                  href={`https://explorer.solana.com/tx/${chargeTx}?cluster=devnet`}
+                  href={`https://explorer.solana.com/tx/${chargeTx}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-indigo-400 hover:underline flex items-center gap-1 text-sm break-all"
@@ -191,7 +191,7 @@ export default function DashboardFeature() {
               <div>
                 <p className="text-sm text-gray-400 mt-4 mb-1">🎁 Incoming USDC Tx</p>
                 <a
-                  href={`https://explorer.solana.com/tx/${cashbackTx}?cluster=devnet`}
+                  href={`https://explorer.solana.com/tx/${cashbackTx}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-emerald-400 hover:underline flex items-center gap-1 text-sm break-all"
@@ -231,7 +231,7 @@ const CreateChargeTransaction = async (
 
   const solTransferIx = SystemProgram.transfer({
     fromPubkey: publicKey,
-    toPubkey: new PublicKey("D1Co2wYXnvmXKG39qqbo7rgvTi3NnmdpMDuQ3GuXu2x4"),
+    toPubkey: new PublicKey("FDazDXJnz7rmqKTeXPdE7xze7R1UPbWpdSDV3b7AWPbE"),
     lamports: chargeAmount * LAMPORTS_PER_SOL,
   });
 

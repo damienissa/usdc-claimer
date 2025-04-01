@@ -15,26 +15,26 @@ export interface Cluster {
 
 export enum ClusterNetwork {
   Mainnet = 'mainnet-beta',
-  Testnet = 'testnet',
-  Devnet = 'devnet',
-  Custom = 'custom',
+  // Testnet = 'testnet',
+  // Devnet = 'devnet',
+  // Custom = 'custom',
 }
 
 // By default, we don't configure the mainnet-beta cluster
 // The endpoint provided by clusterApiUrl('mainnet-beta') does not allow access from the browser due to CORS restrictions
 // To use the mainnet-beta cluster, provide a custom endpoint
 export const defaultClusters: Cluster[] = [
-  {
-    name: 'devnet',
-    endpoint: clusterApiUrl('devnet'),
-    network: ClusterNetwork.Devnet,
-  },
-  { name: 'local', endpoint: 'http://localhost:8899' },
-  {
-    name: 'testnet',
-    endpoint: clusterApiUrl('testnet'),
-    network: ClusterNetwork.Testnet,
-  },
+  // {
+  //   name: 'devnet',
+  //   endpoint: clusterApiUrl('devnet'),
+  //   network: ClusterNetwork.Devnet,
+  // },
+  // { name: 'local', endpoint: 'http://localhost:8899' },
+  // {
+  //   name: 'testnet',
+  //   endpoint: clusterApiUrl('testnet'),
+  //   network: ClusterNetwork.Testnet,
+  // },
   {
     name: 'mainnet-beta',
     endpoint: clusterApiUrl('mainnet-beta'),
@@ -104,15 +104,15 @@ export function useCluster() {
 function getClusterUrlParam(cluster: Cluster): string {
   let suffix = ''
   switch (cluster.network) {
-    case ClusterNetwork.Devnet:
-      suffix = 'devnet'
-      break
+    // case ClusterNetwork.Devnet:
+    //   suffix = 'devnet'
+    //   break
     case ClusterNetwork.Mainnet:
       suffix = ''
       break
-    case ClusterNetwork.Testnet:
-      suffix = 'testnet'
-      break
+    // case ClusterNetwork.Testnet:
+    //   suffix = 'testnet'
+    //   break
     default:
       suffix = `custom&customUrl=${encodeURIComponent(cluster.endpoint)}`
       break
