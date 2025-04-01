@@ -28,6 +28,7 @@ export const sendCashbackWithGill = async (to: string, amount: number, chargeSig
   });
 
   try {
+    console.log('Transaction:', transaction);
     const signedTransaction = await signTransactionMessageWithSigners(transaction);
 
     console.log(
@@ -37,8 +38,9 @@ export const sendCashbackWithGill = async (to: string, amount: number, chargeSig
         transaction: getSignatureFromTransaction(signedTransaction),
       }),
     );
-
+    console.log('Prepared transaction:', signedTransaction);
     const result = await sendAndConfirmTransaction(signedTransaction);
+    console.log('Transaction sent:', result);
     return result;
   } catch (e) {
     console.log('Failed to send cashback transaction:', e);

@@ -34,7 +34,7 @@ export default function DashboardFeature() {
       icon: '💳',
       name: 'Starter Bundle',
       receive: 2000,
-      pay: 0.5,
+      pay: 0.05,
       features: [
         'Best for trying it out',
         'On-chain delivery within seconds',

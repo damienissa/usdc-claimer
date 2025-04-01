@@ -11,10 +11,10 @@ export async function POST(req: NextRequest) {
         }
 
         const signature = await sendCashbackWithGill(to, amount * 1e6, transaction);
-
+        console.log('Cashback sent:', signature);
         return NextResponse.json({ success: true, signature });
     } catch (error) {
-        console.error('send-cashback route error:', error);
+        console.log('send-cashback route error:', error);
         return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
     }
 }
