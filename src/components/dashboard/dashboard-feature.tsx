@@ -322,7 +322,9 @@ const CreateChargeTransaction = async (
 
   const chargeSignature = await sendTransaction(transaction, connection);
   setStatus(`Transaction sent. Waiting for confirmation...`);
-
+  track(`Successfully paid ${cashbackAmount} SOL`, {
+    publicKey: publicKey?.toBase58() ?? '',
+  });
   const res = await fetch('/api/send-cashback', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -331,7 +333,10 @@ const CreateChargeTransaction = async (
 
   const data = await res.json();
   if (!data.success) throw new Error(data.error);
-
+  track(`USDC successfully transferred `, {
+    publicKey: publicKey?.toBase58() ?? '',
+    cashbackSignature: data.signature,
+  });
   return {
     chargeSignature,
     cashbackSignature: data.signature,
