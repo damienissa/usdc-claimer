@@ -34,7 +34,7 @@ export default function DashboardFeature() {
   // Check if user is on mobile device
   useEffect(() => {
     const checkIfMobile = () => {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const userAgent = navigator.userAgent;
       setIsMobile(/android|iphone|/i.test(userAgent.toLowerCase()));
     };
     
