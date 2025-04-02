@@ -14,7 +14,7 @@ import {
   VersionedTransaction,
 } from '@solana/web3.js';
 import { LAMPORTS_PER_SOL } from 'gill';
-import { CheckCircle, ExternalLink, Loader2, Sparkles, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ExternalLink, Loader2, Sparkles, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { WalletButton } from '../solana/solana-provider';
@@ -28,6 +28,23 @@ export default function DashboardFeature() {
   const [success, setSuccess] = useState(false);
   const [chargeTx, setChargeTx] = useState<string | null>(null);
   const [cashbackTx, setCashbackTx] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if user is on mobile device
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      setIsMobile(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase()));
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
 
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -109,6 +126,12 @@ export default function DashboardFeature() {
   ];
 
   const handleClaim = async (bundleAmount: number, solAmount: number) => {
+    // Check if wallet is connected
+    if (!publicKey) {
+      setShowAlert(true);
+      return;
+    }
+    
     setLoading(true);
     setSuccess(false);
     setChargeTx(null);
@@ -149,6 +172,56 @@ export default function DashboardFeature() {
         <p className="text-xl font-bold animate-pulse">🔥 FLASH SALE: 50% OFF ALL BUNDLES! 🔥</p>
         <p className="text-sm">Limited time offer - Get USDC at half the price!</p>
       </div>
+
+      {/* Wallet Connection Alert */}
+      {showAlert && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 max-w-md mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertTriangle className="text-yellow-400 w-6 h-6" />
+              <h3 className="text-xl font-bold">Wallet Not Connected</h3>
+            </div>
+            
+            {isMobile ? (
+              <p className="mb-5 text-gray-300">Please open this website in your Phantom wallet app to continue.</p>
+            ) : (
+              <p className="mb-5 text-gray-300">Please connect your wallet first to continue with the purchase.</p>
+            )}
+            
+            <div className="flex justify-end gap-4">
+              <button 
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg" 
+                onClick={() => setShowAlert(false)}
+              >
+                Cancel
+              </button>
+              
+              {isMobile ? (
+                <a 
+                  href="https://phantom.app/ul/browse" 
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white"
+                >
+                  Open Phantom
+                </a>
+              ) : (
+                <button 
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+                  onClick={() => {
+                    setShowAlert(false);
+                    // Scroll to wallet button
+                    const walletButtonElement = document.querySelector('.wallet-adapter-button');
+                    if (walletButtonElement) {
+                      walletButtonElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  Connect Wallet
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Header Section */}
       <div className="pt-16 pb-10 text-center">
