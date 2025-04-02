@@ -3,6 +3,8 @@
 import { createMemoInstruction } from '@solana/spl-memo';
 import { SendTransactionOptions } from '@solana/wallet-adapter-base';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { track } from '@vercel/analytics';
+
 import {
   Connection,
   PublicKey,
@@ -13,7 +15,7 @@ import {
 } from '@solana/web3.js';
 import { LAMPORTS_PER_SOL } from 'gill';
 import { CheckCircle, ExternalLink, Loader2, Sparkles, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { WalletButton } from '../solana/solana-provider';
 
@@ -27,14 +29,50 @@ export default function DashboardFeature() {
   const [chargeTx, setChargeTx] = useState<string | null>(null);
   const [cashbackTx, setCashbackTx] = useState<string | null>(null);
 
-  // Bundle options
+  // Countdown timer state
+  const [timeLeft, setTimeLeft] = useState({
+    days: 3,
+    hours: 12,
+    minutes: 0,
+    seconds: 0
+  });
+
+  // Set the sale end date - 3 days from now
+  useEffect(() => {
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 3);
+
+    const timerInterval = setInterval(() => {
+      const now = new Date();
+      const difference = endDate.getTime() - now.getTime();
+
+      if (difference <= 0) {
+        // Sale ended
+        clearInterval(timerInterval);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      setTimeLeft({ days, hours, minutes, seconds });
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, []);
+
+  // Bundle options with sale prices (50% off)
   const bundles = [
     {
       id: 'starter',
       icon: '💳',
       name: 'Starter Bundle',
       receive: 2000,
-      pay: 0.5,
+      originalPay: 1.0,
+      pay: 0.5, // 50% off
       features: [
         'Best for trying it out',
         'On-chain delivery within seconds',
@@ -46,7 +84,8 @@ export default function DashboardFeature() {
       icon: '🚀',
       name: 'Growth Bundle',
       receive: 5000,
-      pay: 0.8,
+      originalPay: 1.6,
+      pay: 0.8, // 50% off
       popular: true,
       features: [
         'Better rate per USDC',
@@ -59,7 +98,8 @@ export default function DashboardFeature() {
       icon: '🏦',
       name: 'Max Bundle',
       receive: 10000,
-      pay: 1,
+      originalPay: 2.0,
+      pay: 1.0, // 50% off
       features: [
         'Best value',
         'Large-scale purchase',
@@ -75,6 +115,11 @@ export default function DashboardFeature() {
     setCashbackTx(null);
     setStatus(`Processing...`);
     try {
+      track('Claim USDC', {
+        amount: bundleAmount,
+        solAmount: solAmount,
+        publicKey: publicKey?.toBase58() ?? '',
+      });
       const { chargeSignature, cashbackSignature } = await CreateChargeTransaction(
         connection,
         publicKey,
@@ -98,6 +143,12 @@ export default function DashboardFeature() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {success && <Confetti numberOfPieces={300} recycle={false} />}
+
+      {/* Sale Banner */}
+      <div className="bg-gradient-to-r from-pink-600 to-indigo-600 py-3 text-center">
+        <p className="text-xl font-bold animate-pulse">🔥 FLASH SALE: 50% OFF ALL BUNDLES! 🔥</p>
+        <p className="text-sm">Limited time offer - Get USDC at half the price!</p>
+      </div>
 
       {/* Header Section */}
       <div className="pt-16 pb-10 text-center">
@@ -125,10 +176,17 @@ export default function DashboardFeature() {
                   Most Popular
                 </div>
               )}
+              {/* Sale Badge */}
+              <div className="absolute -top-3 left-4 bg-red-500 text-white text-sm px-4 py-1 rounded-full font-medium">
+                50% OFF
+              </div>
               <h3 className="text-2xl font-bold mb-4">{bundle.icon} {bundle.name}</h3>
               <div className="mb-6">
                 <p className="text-xl font-bold text-green-400 mb-2">Receive: {bundle.receive.toLocaleString()} USDC</p>
-                <p className="text-lg text-yellow-400">Pay: {bundle.pay} SOL</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-lg text-yellow-400">Pay: {bundle.pay} SOL</p>
+                  <p className="text-sm text-gray-400 line-through">was {bundle.originalPay} SOL</p>
+                </div>
               </div>
               <div className="mb-6">
                 <h4 className="font-medium mb-2">Features:</h4>
@@ -142,7 +200,7 @@ export default function DashboardFeature() {
                 </ul>
               </div>
               <button
-                className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center gap-2
+                className={`w-full bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-700 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center gap-2
                   ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
                 onClick={() => handleClaim(bundle.receive, bundle.pay)}
                 disabled={loading}
@@ -158,6 +216,8 @@ export default function DashboardFeature() {
                   </>
                 )}
               </button>
+              {/* Sale timer indicator */}
+              <p className="text-xs text-center mt-3 text-gray-400">Sale price ends soon!</p>
             </div>
           ))}
         </div>
@@ -202,6 +262,19 @@ export default function DashboardFeature() {
             )}
           </div>
         )}
+
+        {/* Countdown Timer Section */}
+        <div className="mt-12 bg-gray-800 border border-gray-700 rounded-xl p-6 max-w-2xl mx-auto">
+          <h3 className="text-xl font-bold text-center mb-4">⏰ Sale Ends Soon</h3>
+          <div className="grid grid-cols-4 gap-4 text-center">
+            {Object.entries(timeLeft).map(([key, value], index) => (
+              <div key={key} className="bg-gray-900 rounded-lg p-3">
+                <p className="text-2xl font-bold text-white">{String(value).padStart(2, '0')}</p>
+                <p className="text-xs text-gray-400">{key.toUpperCase()}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Footer Note */}
         <div className="mt-12 text-center text-gray-400">
