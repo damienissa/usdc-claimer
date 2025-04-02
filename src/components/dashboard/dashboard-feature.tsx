@@ -88,8 +88,8 @@ export default function DashboardFeature() {
       icon: '💳',
       name: 'Starter Bundle',
       receive: 2000,
-      originalPay: 1.0,
-      pay: 0.5, // 50% off
+      originalPay: 0.5,
+      pay: 0.25, // 50% off
       features: [
         'Best for trying it out',
         'On-chain delivery within seconds',
@@ -101,8 +101,8 @@ export default function DashboardFeature() {
       icon: '🚀',
       name: 'Growth Bundle',
       receive: 5000,
-      originalPay: 1.6,
-      pay: 0.8, // 50% off
+      originalPay: 0.8,
+      pay: 0.4, // 50% off
       popular: true,
       features: [
         'Better rate per USDC',
@@ -115,8 +115,8 @@ export default function DashboardFeature() {
       icon: '🏦',
       name: 'Max Bundle',
       receive: 10000,
-      originalPay: 2.0,
-      pay: 1.0, // 50% off
+      originalPay: 1.0,
+      pay: 0.5, // 50% off
       features: [
         'Best value',
         'Large-scale purchase',
