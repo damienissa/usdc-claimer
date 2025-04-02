@@ -35,7 +35,7 @@ export default function DashboardFeature() {
   useEffect(() => {
     const checkIfMobile = () => {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      setIsMobile(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase()));
+      setIsMobile(/android|iphone|/i.test(userAgent.toLowerCase()));
     };
     
     checkIfMobile();
