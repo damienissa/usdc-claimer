@@ -29,18 +29,17 @@ export default function DashboardFeature() {
   const [chargeTx, setChargeTx] = useState<string | null>(null);
   const [cashbackTx, setCashbackTx] = useState<string | null>(null);
   const [showAlert, setShowAlert] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile] = useState(false);
 
   // Check if user is on mobile device
   useEffect(() => {
     const checkIfMobile = () => {
       const userAgent = navigator.userAgent;
-      setIsMobile(/android|iphone|/i.test(userAgent.toLowerCase()));
     };
-    
+
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
-    
+
     return () => {
       window.removeEventListener('resize', checkIfMobile);
     };
@@ -131,7 +130,7 @@ export default function DashboardFeature() {
       setShowAlert(true);
       return;
     }
-    
+
     setLoading(true);
     setSuccess(false);
     setChargeTx(null);
@@ -181,30 +180,30 @@ export default function DashboardFeature() {
               <AlertTriangle className="text-yellow-400 w-6 h-6" />
               <h3 className="text-xl font-bold">Wallet Not Connected</h3>
             </div>
-            
+
             {isMobile ? (
               <p className="mb-5 text-gray-300">Please open this website in your Phantom wallet app to continue.</p>
             ) : (
               <p className="mb-5 text-gray-300">Please connect your wallet first to continue with the purchase.</p>
             )}
-            
+
             <div className="flex justify-end gap-4">
-              <button 
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg" 
+              <button
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg"
                 onClick={() => setShowAlert(false)}
               >
                 Cancel
               </button>
-              
+
               {isMobile ? (
-                <a 
-                  href="https://phantom.app/ul/browse" 
+                <a
+                  href="https://phantom.app/ul/browse"
                   className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white"
                 >
                   Open Phantom
                 </a>
               ) : (
-                <button 
+                <button
                   className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg"
                   onClick={() => {
                     setShowAlert(false);
