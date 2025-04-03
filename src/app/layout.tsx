@@ -1,4 +1,5 @@
 import { ClusterProvider } from '@/components/cluster/cluster-data-access'
+import { SmartlookProvider } from '@/components/smartlook/smartlook-provider'
 import { SolanaProvider } from '@/components/solana/solana-provider'
 import { Analytics } from "@vercel/analytics/react"
 import './globals.css'
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ReactQueryProvider>
           <ClusterProvider>
             <SolanaProvider>
+              <SmartlookProvider />
               {children}
               <Analytics />
             </SolanaProvider>
