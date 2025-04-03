@@ -203,19 +203,7 @@ export default function DashboardFeature() {
                   Open Phantom
                 </a>
               ) : (
-                <button
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg"
-                  onClick={() => {
-                    setShowAlert(false);
-                    // Scroll to wallet button
-                    const walletButtonElement = document.querySelector('.wallet-adapter-button');
-                    if (walletButtonElement) {
-                      walletButtonElement.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                >
-                  Connect Wallet
-                </button>
+                <WalletButton />
               )}
             </div>
           </div>
